@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-
 pub mod days;
 use color_eyre::eyre::Result;
 
@@ -19,8 +17,10 @@ fn main() -> Result<()> {
     println!("My True-strat Score is {}", given_strat_score_true()?);
 
     println!("Day 3:");
-    println!("Sum of prioirities of common items: {}", common_priority_sum()?);
-    println!("My True-strat Score is {}", given_strat_score_true()?);
-    
+    println!(
+        "Sum of prioirities of common items: {}",
+        common_priority_sum()?
+    );
+    println!("{}", 2);
     Ok(())
 }
