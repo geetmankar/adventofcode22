@@ -21,6 +21,6 @@ fn main() -> Result<()> {
         "Sum of prioirities of common items: {}",
         common_priority_sum()?
     );
-    println!("{}", 2);
+    // println!("{}", 2);
     Ok(())
 }
