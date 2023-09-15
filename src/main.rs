@@ -1,10 +1,9 @@
 pub mod days;
 use color_eyre::eyre::Result;
-
 use days::{
     day01::{max_calories, top3_calories},
     day02::{given_strat_score_guess, given_strat_score_true},
-    day03::common_priority_sum,
+    day03::{common_priority_sum, team_common_priority_sum},
 };
 
 fn main() -> Result<()> {
@@ -21,6 +20,10 @@ fn main() -> Result<()> {
         "Sum of prioirities of common items: {}",
         common_priority_sum()?
     );
-    // println!("{}", 2);
+    println!(
+        "Sum of prioirities of badges: {}",
+        team_common_priority_sum()?
+    );
+
     Ok(())
 }

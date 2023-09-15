@@ -1,25 +1,23 @@
 use color_eyre::eyre::Result;
-use itertools::iproduct;
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::fs::read_to_string;
 
-fn lcs(str1: &str, str2: &str) -> Option<String> {
-    let mut matrix = vec![vec![0i32; str1.len() + 1]; str2.len() + 1];
-    let mut maxlen = 0usize;
-    let mut last_idx = str1.len();
-
-    for (i, j) in iproduct!(1..str1.len() + 1, 1..str2.len() + 1) {
-        if str1.chars().nth(i - 1)? == str2.chars().nth(j - 1)? {
-            matrix[i][j] = matrix[i - 1][j - 1] + 1;
-
-            if matrix[i][j] as usize > maxlen {
-                maxlen = matrix[i][j] as usize;
-                last_idx = i;
-            }
-        }
-    }
-
-    Some((str1[(last_idx - maxlen)..last_idx]).to_string())
+fn find_duplicates(sets: Vec<&str>) -> char {
+    let chars_of_other_sets: Vec<Vec<char>> = sets
+        .iter()
+        .skip(1)
+        .map(|set| set.chars().collect::<Vec<_>>())
+        .collect();
+    // we iterate through the chars of the first set and check if all other sets contain it
+    sets[0]
+        .chars()
+        .find(|c| {
+            chars_of_other_sets
+                .iter()
+                .all(|other_set| other_set.contains(c))
+        })
+        .expect(format!("No duplicates in: {:?}", sets).as_str())
 }
 
 pub fn common_priority_sum() -> Result<u32> {
@@ -34,11 +32,8 @@ pub fn common_priority_sum() -> Result<u32> {
     // let filepath = "data/rucktest.dat";
 
     for ruckline in read_to_string(filepath)?.lines() {
-        if ruckline.len() % 2 != 0 {
-            println!("{}", ruckline)
-        }
         let half = ruckline.len() / 2;
-        let substr = lcs(&ruckline[..half], &ruckline[half..]).unwrap_or("".to_string());
+        let substr = find_duplicates(vec![&ruckline[..half], &ruckline[half..]]).to_string();
 
         prio_sum += substr
             .chars()
@@ -47,4 +42,33 @@ pub fn common_priority_sum() -> Result<u32> {
     }
 
     Ok(prio_sum)
+}
+
+pub fn team_common_priority_sum() -> Result<u32> {
+    let charhash: HashMap<char, u32> = ('a'..='z')
+        .chain('A'..='Z')
+        .enumerate()
+        .map(|(i, c)| (c, (i + 1) as u32))
+        .collect();
+
+    let mut badge_prio_sum = 0u32;
+    let filepath = "data/rucksack.dat";
+    // let filepath = "data/rucktest.dat";
+    let binding = read_to_string(filepath)?
+        .lines()
+        .map(|s| s.to_owned())
+        .collect_vec();
+    let chunkvec = binding.chunks(3).collect_vec();
+
+    for ruck3vec in chunkvec {
+        badge_prio_sum += {
+            let c = find_duplicates(fun_name(ruck3vec));
+            *(charhash.get(&c).unwrap_or(&0u32))
+        };
+    }
+    Ok(badge_prio_sum)
+}
+
+fn fun_name(ruck3vec: &[String]) -> Vec<&str> {
+    ruck3vec.into_iter().map(|s| s.as_str()).collect_vec()
 }
